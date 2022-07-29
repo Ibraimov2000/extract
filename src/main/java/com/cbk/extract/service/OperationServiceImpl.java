@@ -43,7 +43,7 @@ public class OperationServiceImpl implements OperationService {
             Workbook workbook = new HSSFWorkbook(fileInputStream);
             HSSFSheet workSheet = (HSSFSheet) workbook.getSheet("radA45FF");
 
-            for (int i = 12; i < 15241; i++) {
+            for (int i = 12; i < workSheet.getLastRowNum() - 10; i++) {
                 Row row = workSheet.getRow(i);
 
                 String date = row.getCell(0).toString();
