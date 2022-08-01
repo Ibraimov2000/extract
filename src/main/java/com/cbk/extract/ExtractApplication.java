@@ -4,6 +4,7 @@ import com.cbk.extract.entity.Operation;
 import com.cbk.extract.entity.Transfer;
 import com.cbk.extract.service.OperationService;
 import com.cbk.extract.service.TransferService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @SpringBootApplication
+@Slf4j
 public class ExtractApplication implements CommandLineRunner{
 
     @Autowired
@@ -42,6 +44,7 @@ public class ExtractApplication implements CommandLineRunner{
         }
 
 
+        log.info("Идет сравнение платежей...");
         for (Transfer transfer : transfers) {
             if (map.containsKey(transfer.getPlatformReferenceNumber())) {
                 map.replace(transfer.getPlatformReferenceNumber(), true);
