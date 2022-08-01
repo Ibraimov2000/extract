@@ -38,7 +38,7 @@ public class OperationServiceImpl implements OperationService {
         FileInputStream fileInputStream = new FileInputStream(file);
         List<Operation> list = new ArrayList<>();
 
-        log.info("ЧТЕНИЕ ДАННЫХ ИЗ ФАЙЛА...");
+        log.info("ЧТЕНИЕ ДАННЫХ ИЗ EXCEL ФАЙЛА...");
         try {
             Workbook workbook = new HSSFWorkbook(fileInputStream);
             HSSFSheet workSheet = (HSSFSheet) workbook.getSheet("radA45FF");
