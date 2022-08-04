@@ -6,18 +6,15 @@ import javax.persistence.*;
 
 @Entity
 @Data
-public class Transfer {
+public class ReceivingAmount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
-    private String date;
+    private Double amount;
 
     @Column
-    private String platformReferenceNumber;
-
-    @OneToOne
-    private ReceivingAmount receivingAmount;
+    private String currency;
 }

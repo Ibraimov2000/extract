@@ -10,13 +10,12 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -32,10 +31,11 @@ public class OperationServiceImpl implements OperationService {
 
 
     @Override
-    public List<Operation> read() throws FileNotFoundException {
+    public List<Operation> parse(MultipartFile file) throws FileNotFoundException {
 
-        File file = new File("D:\\work\\extract\\src\\main\\java\\extract.xls");
-        FileInputStream fileInputStream = new FileInputStream(file);
+        File convFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
+
+        FileInputStream fileInputStream = new FileInputStream(convFile);
         List<Operation> list = new ArrayList<>();
 
         log.info("ЧТЕНИЕ ДАННЫХ ИЗ EXCEL ФАЙЛА...");
@@ -47,7 +47,9 @@ public class OperationServiceImpl implements OperationService {
                 Row row = workSheet.getRow(i);
 
                 String date = row.getCell(0).toString();
+                date = date.replace("\u00a0", "");
                 String recipient = row.getCell(1).getStringCellValue();
+                recipient = recipient.replace("\u00a0", "");
                 String strSum = "";
 
                 if (!row.getCell(2).getStringCellValue().isEmpty()) {
@@ -90,12 +92,10 @@ public class OperationServiceImpl implements OperationService {
 
     @Transactional
     @Override
-    public void save(List<Operation> list) {
+    public List<Operation> saveAll(List<Operation> list) {
 
         log.info("СОХРАНЕНИЕ ДАННЫХ В БД...");
-        for (Operation transaction : list) {
-            operationRepository.saveAndFlush(transaction);
-        }
+        return operationRepository.saveAll(list);
     }
 
     @Override
