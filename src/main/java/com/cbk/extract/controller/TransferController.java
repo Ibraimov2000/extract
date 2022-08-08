@@ -42,26 +42,4 @@ public class TransferController {
         return ResponseEntity.ok().body(transferService.findAll());
     }
 
-    @RequestMapping(value = "/compare", method = RequestMethod.GET)
-    public ResponseEntity<Map<String, Boolean>> getCompare() {
-
-
-        List<Operation> operations = operationService.findAll();
-        List<Transfer> transfers = transferService.findAll();
-        Map<String, Boolean> map = new HashMap<>();
-
-        for (Transfer transfer : transfers) {
-            map.put(transfer.getPlatformReferenceNumber(), false);
-        }
-
-
-        log.info("Идет сравнение платежей...");
-        for (Operation operation : operations) {
-            if (map.containsKey(operation.getOperation())) {
-                map.replace(operation.getOperation(), true);
-            }
-        }
-
-        return ResponseEntity.ok().body(map);
-    }
 }

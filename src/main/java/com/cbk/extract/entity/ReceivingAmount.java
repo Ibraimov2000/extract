@@ -17,4 +17,5 @@ public class ReceivingAmount {
 
     @Column
     private String currency;
+
 }

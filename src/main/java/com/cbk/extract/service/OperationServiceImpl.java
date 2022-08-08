@@ -16,6 +16,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @Slf4j
@@ -31,11 +33,10 @@ public class OperationServiceImpl implements OperationService {
 
 
     @Override
-    public List<Operation> parse(MultipartFile file) throws FileNotFoundException {
+    public List<Operation> parse(MultipartFile file) throws IOException {
 
-        File convFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
 
-        FileInputStream fileInputStream = new FileInputStream(convFile);
+        InputStream fileInputStream = file.getInputStream();
         List<Operation> list = new ArrayList<>();
 
         log.info("ЧТЕНИЕ ДАННЫХ ИЗ EXCEL ФАЙЛА...");
@@ -57,31 +58,19 @@ public class OperationServiceImpl implements OperationService {
                 }
 
                 double sum = Double.parseDouble(strSum.replaceAll(",", "").replaceAll("\\u00a0", ""));
-                String[] operations = row.getCell(4).getStringCellValue().split("");
-                boolean flag = false;
-                StringBuilder op = new StringBuilder();
 
-                for (String ch : operations) {
-
-                    if (ch.equals(".")) {
-                        flag = false;
-                    }
-                    if (flag) {
-                        op.append(ch);
-                    }
-                    if (ch.equals("_")) {
-                        flag = true;
-                    }
-
-                }
+                String op = getOperationId(row.getCell(4).getStringCellValue());
 
                 Operation operation = new Operation();
-                operation.setOperation(op.toString());
+                operation.setOperation(op.replaceAll("\\.","").replaceAll("SBPIN2_", ""));
                 operation.setDate(date);
                 operation.setRecipient(recipient);
                 operation.setSum(sum);
 
-                list.add(operation);
+                if (!op.isEmpty() | !op.equals("")) {
+                    list.add(operation);
+                }
+
             }
 
         } catch (NumberFormatException | IOException numberFormatException) {
@@ -111,5 +100,11 @@ public class OperationServiceImpl implements OperationService {
     @Override
     public List<Operation> findAll() {
         return operationRepository.findAll();
+    }
+
+    private String getOperationId(String value){
+        Pattern p = Pattern.compile("SBPIN2_[^)]*\\.");
+        Matcher matcher = p.matcher(value);
+        return  matcher.find() ? matcher.group() : "";
     }
 }
